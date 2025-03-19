@@ -1,37 +1,18 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <limits.h>
 
-#define MAX 10
+void sjfNonPreemptive(int n, int at[], int bt[], int p[]) {
+    int ct[n], tat[n], wt[n], completed = 0, currentTime = 0, isCompleted[n];
 
-struct process {
-    int id, AT, BT, CT, TAT, WT, RT;
-    int completed;
-};
-
-void sort_by_AT(struct process p[], int n) {
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = i + 1; j < n; j++) {
-            if (p[i].AT > p[j].AT) {
-                struct process temp = p[i];
-                p[i] = p[j];
-                p[j] = temp;
-            }
-        }
-    }
-}
-
-void calculate_SJF_NonPreemptive(struct process p[], int n) {
-    int completed = 0, currentTime = 0;
-    
-    sort_by_AT(p, n);
+    for (int i = 0; i < n; i++)
+        isCompleted[i] = 0;
 
     while (completed < n) {
         int shortest = -1, minBT = INT_MAX;
 
         for (int i = 0; i < n; i++) {
-            if (!p[i].completed && p[i].AT <= currentTime && p[i].BT < minBT) {
-                minBT = p[i].BT;
+            if (at[i] <= currentTime && bt[i] < minBT && isCompleted[i] == 0) {
+                minBT = bt[i];
                 shortest = i;
             }
         }
@@ -39,49 +20,42 @@ void calculate_SJF_NonPreemptive(struct process p[], int n) {
         if (shortest == -1) {
             currentTime++;
         } else {
-            p[shortest].RT = currentTime - p[shortest].AT; // RT fixed
-            p[shortest].CT = currentTime + p[shortest].BT;
-            currentTime = p[shortest].CT;
-            p[shortest].TAT = p[shortest].CT - p[shortest].AT;
-            p[shortest].WT = p[shortest].TAT - p[shortest].BT;
-            p[shortest].completed = 1;
+            ct[shortest] = currentTime + bt[shortest];
+            tat[shortest] = ct[shortest] - at[shortest];
+            wt[shortest] = tat[shortest] - bt[shortest];
+            isCompleted[shortest] = 1;
+            currentTime = ct[shortest];
             completed++;
         }
     }
-}
 
-void display(struct process p[], int n) {
-    float total_tat = 0, total_wt = 0;
-
-    printf("\nProcess\tAT\tBT\tCT\tTAT\tWT\tRT\n");
+    printf("\nProcess\tAT\tBT\tCT\tTAT\tWT\n");
+    float totalWT = 0, totalTAT = 0;
     for (int i = 0; i < n; i++) {
-        printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n", p[i].id, p[i].AT, p[i].BT, p[i].CT, p[i].TAT, p[i].WT, p[i].RT);
-        total_tat += p[i].TAT;
-        total_wt += p[i].WT;
+        printf("%d\t%d\t%d\t%d\t%d\t%d\n", p[i], at[i], bt[i], ct[i], tat[i], wt[i]);
+        totalWT += wt[i];
+        totalTAT += tat[i];
     }
 
-    printf("\nAverage TAT: %.2f", total_tat / n);
-    printf("\nAverage WT: %.2f\n", total_wt / n);
+    printf("\nAverage Waiting Time: %.2f", totalWT / n);
+    printf("\nAverage Turnaround Time: %.2f\n", totalTAT / n);
 }
 
 int main() {
-    struct process p[MAX];
     int n;
-
-    printf("Enter number of processes: ");
+    printf("Enter the number of processes: ");
     scanf("%d", &n);
 
+    int at[n], bt[n], p[n];
+
+    printf("Enter Arrival Time and Burst Time for each process:\n");
     for (int i = 0; i < n; i++) {
-        p[i].id = i + 1;
-        printf("Enter Arrival Time (AT) for process %d: ", i + 1);
-        scanf("%d", &p[i].AT);
-        printf("Enter Burst Time (BT) for process %d: ", i + 1);
-        scanf("%d", &p[i].BT);
-        p[i].completed = 0;
+        p[i] = i + 1;  // Assign process IDs
+        printf("Process %d: ", i + 1);
+        scanf("%d %d", &at[i], &bt[i]);
     }
 
-    calculate_SJF_NonPreemptive(p, n);
-    display(p, n);
-
+    sjfNonPreemptive(n, at, bt, p);
+    
     return 0;
 }
