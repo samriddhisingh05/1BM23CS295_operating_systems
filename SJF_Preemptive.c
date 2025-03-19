@@ -10,6 +10,7 @@ struct process {
 
 void calculate_SJF_Preemptive(struct process p[], int n) {
     int completed = 0, currentTime = 0;
+    
     for (int i = 0; i < n; i++) {
         p[i].remaining_BT = p[i].BT;
         p[i].RT = -1;
@@ -28,9 +29,10 @@ void calculate_SJF_Preemptive(struct process p[], int n) {
         if (shortest == -1) {
             currentTime++;
         } else {
-            if (p[shortest].RT == -1) {
+            if (p[shortest].RT == -1) {  // Set RT only on first execution
                 p[shortest].RT = currentTime - p[shortest].AT;
             }
+
             p[shortest].remaining_BT--;
             currentTime++;
 
