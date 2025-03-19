@@ -4,14 +4,14 @@
 void sjfNonPreemptive(int n, int at[], int bt[], int p[]) {
     int ct[n], tat[n], wt[n], completed = 0, currentTime = 0, isCompleted[n];
 
-    // Initialize isCompleted array
+    
     for (int i = 0; i < n; i++)
         isCompleted[i] = 0;
 
     while (completed < n) {
         int shortest = -1, minBT = INT_MAX;
 
-        // Find the shortest job available at the current time
+        
         for (int i = 0; i < n; i++) {
             if (at[i] <= currentTime && isCompleted[i] == 0) {
                 if (bt[i] < minBT || (bt[i] == minBT && (shortest == -1 || at[i] < at[shortest]))) {
@@ -22,7 +22,7 @@ void sjfNonPreemptive(int n, int at[], int bt[], int p[]) {
         }
 
         if (shortest == -1) {
-            // If no process is available, move to the next earliest arrival time
+          
             int nextArrival = INT_MAX;
             for (int i = 0; i < n; i++) {
                 if (!isCompleted[i] && at[i] < nextArrival) {
@@ -31,7 +31,7 @@ void sjfNonPreemptive(int n, int at[], int bt[], int p[]) {
             }
             currentTime = nextArrival;
         } else {
-            // Process execution
+        
             ct[shortest] = currentTime + bt[shortest];
             tat[shortest] = ct[shortest] - at[shortest];
             wt[shortest] = tat[shortest] - bt[shortest];
@@ -41,7 +41,7 @@ void sjfNonPreemptive(int n, int at[], int bt[], int p[]) {
         }
     }
 
-    // Printing results
+  
     printf("\nProcess\tAT\tBT\tCT\tTAT\tWT\n");
     float totalWT = 0, totalTAT = 0;
     for (int i = 0; i < n; i++) {
@@ -63,7 +63,7 @@ int main() {
 
     printf("Enter Arrival Time and Burst Time for each process:\n");
     for (int i = 0; i < n; i++) {
-        p[i] = i + 1;  // Assign process IDs
+        p[i] = i + 1;  
         printf("Process %d: ", i + 1);
         scanf("%d %d", &at[i], &bt[i]);
     }
